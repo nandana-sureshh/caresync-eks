@@ -1,6 +1,6 @@
 ﻿namespace: caresync
 image:
-  repository: nandana2002/caresync-auth
+  repository: nandana2002/caresync-auth-service
   tag: latest
   pullPolicy: Always
 service:

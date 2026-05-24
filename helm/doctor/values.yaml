@@ -1,6 +1,6 @@
 ﻿namespace: caresync
 image:
-  repository: nandana2002/caresync-doctor
+  repository: nandana2002/caresync-doctor-service
   tag: latest
   pullPolicy: Always
 service:

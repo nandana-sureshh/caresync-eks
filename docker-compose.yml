@@ -138,10 +138,10 @@ services:
       context: ./services/frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_AUTH_URL: http://localhost:4001
-        REACT_APP_PATIENT_URL: http://localhost:4002
-        REACT_APP_DOCTOR_URL: http://localhost:4003
-        REACT_APP_APPOINTMENT_URL: http://localhost:4004
+        REACT_APP_AUTH_URL: http://34.229.225.167:4001
+        REACT_APP_PATIENT_URL: http://34.229.225.167:4002
+        REACT_APP_DOCTOR_URL: http://34.229.225.167:4003
+        REACT_APP_APPOINTMENT_URL: http://34.229.225.167:4004
     container_name: caresync-frontend
     restart: unless-stopped
     networks:
