@@ -21,4 +21,4 @@ config:
 secrets:
   # IMPORTANT: Replace with a strong secret before deploying.
   # Generate: openssl rand -base64 32
-  jwtSecret: "REPLACE_WITH_STRONG_SECRET"
+  jwtSecret: "tp3Q5s03PgC6wcblzO081tyP3SBL8JSm/X1P1xUHbv4="

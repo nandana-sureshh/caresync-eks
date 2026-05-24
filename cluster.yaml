@@ -1,0 +1,51 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: caresync-eks
+  region: us-east-1
+  version: "1.32"
+
+iam:
+  withOIDC: true
+
+managedNodeGroups:
+  - name: caresync-nodes
+
+    privateNetworking: true
+
+    instanceType: t3a.medium
+
+    minSize: 1
+    maxSize: 2
+    desiredCapacity: 1
+
+    volumeSize: 30
+    volumeType: gp3
+
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+    tags:
+      kubernetes.io/cluster/caresync-eks: owned
+
+vpc:
+  id: "vpc-090bd76aabe263e63"
+
+  subnets:
+    public:
+      public-1:
+        id: subnet-0031eba28252970e5
+
+      public-2:
+        id: subnet-0e3395be22446f22e
+
+    private:
+      app-1:
+        id: subnet-0ee4a07e7adc07a8c
+
+      app-2:
+        id: subnet-03305827fbb810ba1
