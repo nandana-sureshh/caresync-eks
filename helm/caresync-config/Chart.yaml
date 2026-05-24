@@ -1,0 +1,5 @@
+﻿apiVersion: v2
+name: caresync-config
+description: CareSync shared ConfigMap and Secret chart
+type: application
+version: 1.0.0

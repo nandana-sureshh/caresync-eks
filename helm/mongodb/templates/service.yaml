@@ -1,0 +1,20 @@
+﻿# ── MongoDB ClusterIP Service ─────────────────────────────────────────────────
+# Internal DNS: caresync-mongodb.caresync.svc.cluster.local:27017
+# Shortform used by services in same namespace: caresync-mongodb:27017
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.service.name }}
+    project: caresync
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Values.service.name }}
+  ports:
+    - name: mongodb
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+      protocol: TCP

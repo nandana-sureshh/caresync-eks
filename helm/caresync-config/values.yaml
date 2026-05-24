@@ -1,0 +1,24 @@
+﻿namespace: caresync
+
+config:
+  nodeEnv: production
+  jwtExpiresIn: "7d"
+
+  # ── Internal K8s Service URLs ────────────────────────────────────────────────
+  authServiceUrl: "http://caresync-auth-service.caresync.svc.cluster.local:4001"
+  patientServiceUrl: "http://caresync-patient-service.caresync.svc.cluster.local:4002"
+  doctorServiceUrl: "http://caresync-doctor-service.caresync.svc.cluster.local:4003"
+  appointmentServiceUrl: "http://caresync-appointment-service.caresync.svc.cluster.local:4004"
+
+  # ── MongoDB URIs (shared StatefulSet inside Kubernetes) ──────────────────────
+  # All services share ONE MongoDB StatefulSet with separate logical databases.
+  # K8s DNS: caresync-mongodb.caresync.svc.cluster.local:27017
+  authMongoUri: "mongodb://caresync-mongodb:27017/authdb"
+  patientMongoUri: "mongodb://caresync-mongodb:27017/patientdb"
+  doctorMongoUri: "mongodb://caresync-mongodb:27017/doctordb"
+  appointmentMongoUri: "mongodb://caresync-mongodb:27017/appointmentdb"
+
+secrets:
+  # IMPORTANT: Replace with a strong secret before deploying.
+  # Generate: openssl rand -base64 32
+  jwtSecret: "REPLACE_WITH_STRONG_SECRET"

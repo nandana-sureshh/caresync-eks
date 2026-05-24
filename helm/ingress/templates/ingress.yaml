@@ -1,0 +1,63 @@
+﻿apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: caresync-ingress
+  namespace: {{ .Values.namespace }}
+  labels:
+    project: caresync
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: {{ .Values.alb.scheme }}
+    alb.ingress.kubernetes.io/target-type: {{ .Values.alb.targetType }}
+    alb.ingress.kubernetes.io/load-balancer-name: caresync-alb
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "10"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "3"
+    {{- if .Values.alb.certificateArn }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.alb.certificateArn }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    {{- else }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    {{- end }}
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.services.auth.name }}
+                port:
+                  number: {{ .Values.services.auth.port }}
+          - path: /api/patients
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.services.patient.name }}
+                port:
+                  number: {{ .Values.services.patient.port }}
+          - path: /api/doctors
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.services.doctor.name }}
+                port:
+                  number: {{ .Values.services.doctor.port }}
+          - path: /api/appointments
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.services.appointment.name }}
+                port:
+                  number: {{ .Values.services.appointment.port }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.services.frontend.name }}
+                port:
+                  number: {{ .Values.services.frontend.port }}

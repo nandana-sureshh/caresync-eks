@@ -1,0 +1,155 @@
+# ── CareSync Local Development Stack ─────────────────────────────────────────
+# Usage: docker-compose up --build
+#
+# Architecture:
+#   - ONE shared MongoDB container (mirrors EKS external MongoDB pattern)
+#   - 4 backend microservices + 1 React frontend (nginx)
+#   - All services on the 'caresync-net' bridge network
+#   - Services connect to MongoDB via Docker DNS: mongodb://mongo:27017/<dbname>
+#
+# Frontend API URLs are injected at BUILD TIME via build args.
+# The values below point to the ALB-style path-based routing over localhost:80
+# via the nginx proxy. For direct local testing, you can also use the service
+# ports directly (4001-4004).
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+networks:
+  caresync-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+
+services:
+
+  # ── Shared MongoDB ──────────────────────────────────────────────────────────
+  # Single MongoDB instance with 4 logical databases:
+  #   authdb | patientdb | doctordb | appointmentdb
+  mongo:
+    image: mongo:7
+    container_name: caresync-mongo
+    restart: unless-stopped
+    networks:
+      - caresync-net
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"   # Exposed for local inspection with Compass/CLI
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Auth Service ────────────────────────────────────────────────────────────
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: caresync-auth
+    restart: unless-stopped
+    networks:
+      - caresync-net
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: "4001"
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongo:27017/authdb
+      JWT_SECRET: local_dev_secret_change_in_prod
+      JWT_EXPIRES_IN: "7d"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  # ── Patient Service ─────────────────────────────────────────────────────────
+  patient-service:
+    build:
+      context: ./services/patient-service
+      dockerfile: Dockerfile
+    container_name: caresync-patient
+    restart: unless-stopped
+    networks:
+      - caresync-net
+    ports:
+      - "4002:4002"
+    environment:
+      PORT: "4002"
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongo:27017/patientdb
+      JWT_SECRET: local_dev_secret_change_in_prod
+      AUTH_SERVICE_URL: http://auth-service:4001
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  # ── Doctor Service ──────────────────────────────────────────────────────────
+  doctor-service:
+    build:
+      context: ./services/doctor-service
+      dockerfile: Dockerfile
+    container_name: caresync-doctor
+    restart: unless-stopped
+    networks:
+      - caresync-net
+    ports:
+      - "4003:4003"
+    environment:
+      PORT: "4003"
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongo:27017/doctordb
+      JWT_SECRET: local_dev_secret_change_in_prod
+      AUTH_SERVICE_URL: http://auth-service:4001
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  # ── Appointment Service ─────────────────────────────────────────────────────
+  appointment-service:
+    build:
+      context: ./services/appointment-service
+      dockerfile: Dockerfile
+    container_name: caresync-appointment
+    restart: unless-stopped
+    networks:
+      - caresync-net
+    ports:
+      - "4004:4004"
+    environment:
+      PORT: "4004"
+      NODE_ENV: development
+      MONGO_URI: mongodb://mongo:27017/appointmentdb
+      JWT_SECRET: local_dev_secret_change_in_prod
+      AUTH_SERVICE_URL: http://auth-service:4001
+      PATIENT_SERVICE_URL: http://patient-service:4002
+      DOCTOR_SERVICE_URL: http://doctor-service:4003
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  # ── Frontend ────────────────────────────────────────────────────────────────
+  # REACT_APP_* URLs are injected at BUILD TIME (Docker ARG → ENV → npm build).
+  # These values point to services on the same docker-compose network by port.
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_AUTH_URL: http://localhost:4001
+        REACT_APP_PATIENT_URL: http://localhost:4002
+        REACT_APP_DOCTOR_URL: http://localhost:4003
+        REACT_APP_APPOINTMENT_URL: http://localhost:4004
+    container_name: caresync-frontend
+    restart: unless-stopped
+    networks:
+      - caresync-net
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - patient-service
+      - doctor-service
+      - appointment-service

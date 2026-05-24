@@ -1,0 +1,18 @@
+﻿namespace: caresync
+image:
+  repository: nandana2002/caresync-patient
+  tag: latest
+  pullPolicy: Always
+service:
+  name: caresync-patient-service
+  port: 4002
+  type: ClusterIP
+replicas: 1
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+healthPath: /health

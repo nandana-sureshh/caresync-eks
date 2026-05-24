@@ -1,0 +1,18 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: caresync-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    project: caresync
+data:
+  NODE_ENV:               {{ .Values.config.nodeEnv | quote }}
+  JWT_EXPIRES_IN:         {{ .Values.config.jwtExpiresIn | quote }}
+  AUTH_SERVICE_URL:       {{ .Values.config.authServiceUrl | quote }}
+  PATIENT_SERVICE_URL:    {{ .Values.config.patientServiceUrl | quote }}
+  DOCTOR_SERVICE_URL:     {{ .Values.config.doctorServiceUrl | quote }}
+  APPOINTMENT_SERVICE_URL: {{ .Values.config.appointmentServiceUrl | quote }}
+  AUTH_MONGO_URI:         {{ .Values.config.authMongoUri | quote }}
+  PATIENT_MONGO_URI:      {{ .Values.config.patientMongoUri | quote }}
+  DOCTOR_MONGO_URI:       {{ .Values.config.doctorMongoUri | quote }}
+  APPOINTMENT_MONGO_URI:  {{ .Values.config.appointmentMongoUri | quote }}

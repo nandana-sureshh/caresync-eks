@@ -1,0 +1,35 @@
+# ── Node.js ───────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ── Environment Variables ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.production
+.env.*.local
+# Keep .env.example committed (it's a template, not real secrets)
+
+# ── React Build Output ────────────────────────────────────────────────────────
+services/frontend/build/
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+.dockerignore
+
+# ── OS Files ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Temporary Files ───────────────────────────────────────────────────────────
+tmp/
+temp/

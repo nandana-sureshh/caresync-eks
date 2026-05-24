@@ -1,0 +1,29 @@
+﻿namespace: caresync
+
+image:
+  repository: mongo
+  tag: "7.0"
+  pullPolicy: IfNotPresent
+
+service:
+  name: caresync-mongodb
+  port: 27017
+  type: ClusterIP
+
+storage:
+  # gp2 is the default EBS storage class in EKS.
+  # Kubernetes will automatically provision an EBS volume.
+  className: gp2
+  size: 10Gi
+  accessMode: ReadWriteOnce
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+# Logical databases (created on first connect by each service)
+# authdb | patientdb | doctordb | appointmentdb

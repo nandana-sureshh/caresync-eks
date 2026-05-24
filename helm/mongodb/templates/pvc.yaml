@@ -1,0 +1,19 @@
+﻿# ── MongoDB PersistentVolumeClaim ─────────────────────────────────────────────
+# One PVC for the single shared MongoDB instance.
+# In EKS, gp2 storageClass auto-provisions an AWS EBS volume.
+# Data persists across pod restarts and redeployments.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: caresync-mongodb-pvc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.service.name }}
+    project: caresync
+spec:
+  accessModes:
+    - {{ .Values.storage.accessMode }}
+  storageClassName: {{ .Values.storage.className }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}

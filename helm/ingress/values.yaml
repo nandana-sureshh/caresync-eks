@@ -1,0 +1,23 @@
+﻿namespace: caresync
+ingress:
+  host: ""
+alb:
+  scheme: internet-facing
+  targetType: ip
+  certificateArn: ""
+services:
+  frontend:
+    name: caresync-frontend-service
+    port: 8080
+  auth:
+    name: caresync-auth-service
+    port: 4001
+  patient:
+    name: caresync-patient-service
+    port: 4002
+  doctor:
+    name: caresync-doctor-service
+    port: 4003
+  appointment:
+    name: caresync-appointment-service
+    port: 4004

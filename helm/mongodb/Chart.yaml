@@ -1,0 +1,6 @@
+﻿apiVersion: v2
+name: caresync-mongodb
+description: CareSync shared MongoDB StatefulSet (single instance, 4 logical databases)
+type: application
+version: 1.0.0
+appVersion: "7.0"
